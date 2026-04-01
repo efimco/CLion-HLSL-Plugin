@@ -2,6 +2,8 @@
 
 A plugin providing syntax highlighting and DXC validation for HLSL (High Level Shading Language) files.
 
+![Example](example.png)
+
 ## Features
 
 - **Syntax highlighting** for keywords, types, built-in functions, semantics, preprocessor directives, numbers, strings, operators, and comments
