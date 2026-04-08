@@ -1,6 +1,5 @@
-# HLSL Language Support for CLion / IntelliJ
-
-A plugin providing syntax highlighting and DXC validation for HLSL (High Level Shading Language) files.
+# HLSL Language Support for CLion/Rider
+plugin providing syntax highlighting and DXC validation for HLSL (High Level Shading Language) files.
 
 ![Example](example.png)
 
