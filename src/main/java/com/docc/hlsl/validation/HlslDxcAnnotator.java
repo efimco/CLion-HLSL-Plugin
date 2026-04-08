@@ -175,6 +175,8 @@ public class HlslDxcAnnotator extends ExternalAnnotator<HlslDxcAnnotator.Collect
             for (String line : outputLines) {
                 // Skip <built-in> diagnostics from DXC internals
                 if (line.contains("<built-in>")) continue;
+                // Suppress missing entry point error — expected for non-main shader files
+                if (line.contains("missing entry point definition")) continue;
                 Matcher m = DIAG_PATTERN.matcher(line.trim());
                 if (m.matches()) {
                     int diagLine = m.group(1) != null ? Integer.parseInt(m.group(1)) : 0;
