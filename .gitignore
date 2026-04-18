@@ -1,5 +1,7 @@
 .gradle/
 build/
+.vscode/
+.claude
 .idea/
 *.iml
 out/

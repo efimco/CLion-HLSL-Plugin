@@ -14,7 +14,7 @@ public class HlslLexer extends LexerBase {
     private int tokenStart;
     private int tokenEnd;
     private IElementType tokenType;
-    private int state; // 0 = normal, 1 = expecting struct/cbuffer/tbuffer name
+    private int state; // 0 = normal, 1 = expecting struct/cbuffer/tbuffer name, 2 = after dot (field access)
 
     private static final Set<String> STRUCT_DECLARING_KEYWORDS = Set.of(
             "struct", "cbuffer", "tbuffer", "class", "enum", "interface"
@@ -329,7 +329,12 @@ public class HlslLexer extends LexerBase {
             }
             String word = buffer.subSequence(tokenStart, tokenEnd).toString();
 
-            if (KEYWORDS.contains(word)) {
+            if (state == 2) {
+                tokenType = isFollowedByCallParen(tokenEnd)
+                        ? HlslTokenTypes.INSTANCE_METHOD_CALL
+                        : HlslTokenTypes.FIELD_ACCESS;
+                state = 0;
+            } else if (KEYWORDS.contains(word)) {
                 tokenType = HlslTokenTypes.KEYWORD;
                 if (STRUCT_DECLARING_KEYWORDS.contains(word)) {
                     state = 1;
@@ -348,6 +353,9 @@ public class HlslLexer extends LexerBase {
             } else if (state == 1) {
                 tokenType = HlslTokenTypes.STRUCT_NAME;
                 state = 0;
+            } else if (isFollowedByCallParen(tokenEnd)) {
+                tokenType = HlslTokenTypes.FUNCTION_CALL;
+                state = 0;
             } else {
                 tokenType = HlslTokenTypes.IDENTIFIER;
             }
@@ -358,15 +366,15 @@ public class HlslLexer extends LexerBase {
         tokenEnd = tokenStart + 1;
         switch (c) {
             case ';': tokenType = HlslTokenTypes.SEMICOLON; state = 0; return;
-            case ',': tokenType = HlslTokenTypes.COMMA; return;
-            case '.': tokenType = HlslTokenTypes.DOT; return;
-            case ':': tokenType = HlslTokenTypes.COLON; return;
-            case '(': tokenType = HlslTokenTypes.LPAREN; return;
-            case ')': tokenType = HlslTokenTypes.RPAREN; return;
-            case '{': tokenType = HlslTokenTypes.LBRACE; return;
-            case '}': tokenType = HlslTokenTypes.RBRACE; return;
-            case '[': tokenType = HlslTokenTypes.LBRACKET; return;
-            case ']': tokenType = HlslTokenTypes.RBRACKET; return;
+            case ',': tokenType = HlslTokenTypes.COMMA; state = 0; return;
+            case '.': tokenType = HlslTokenTypes.DOT; state = 2; return;
+            case ':': tokenType = HlslTokenTypes.COLON; state = 0; return;
+            case '(': tokenType = HlslTokenTypes.LPAREN; state = 0; return;
+            case ')': tokenType = HlslTokenTypes.RPAREN; state = 0; return;
+            case '{': tokenType = HlslTokenTypes.LBRACE; state = 0; return;
+            case '}': tokenType = HlslTokenTypes.RBRACE; state = 0; return;
+            case '[': tokenType = HlslTokenTypes.LBRACKET; state = 0; return;
+            case ']': tokenType = HlslTokenTypes.RBRACKET; state = 0; return;
             case '+': case '-': case '*': case '/': case '%':
             case '&': case '|': case '^': case '~': case '!':
             case '<': case '>': case '=': case '?':
@@ -404,5 +412,13 @@ public class HlslLexer extends LexerBase {
 
     private static boolean isHexDigit(char c) {
         return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+    }
+
+    private boolean isFollowedByCallParen(int fromOffset) {
+        int i = fromOffset;
+        while (i < bufferEnd && Character.isWhitespace(buffer.charAt(i))) {
+            i++;
+        }
+        return i < bufferEnd && buffer.charAt(i) == '(';
     }
 }

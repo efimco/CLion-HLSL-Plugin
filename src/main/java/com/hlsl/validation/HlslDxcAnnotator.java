@@ -34,6 +34,11 @@ public class HlslDxcAnnotator extends ExternalAnnotator<HlslDxcAnnotator.Collect
             "^(?:.*?:(\\d+):(\\d+):\\s*)?(error|warning|note):\\s*(.+)$"
     );
 
+    // Matches "parameter 'X' is not used" to extract parameter name for false-positive filtering
+    private static final Pattern UNUSED_PARAM_PATTERN = Pattern.compile(
+            "parameter '(\\w+)' is not used"
+    );
+
     public static class CollectedInfo {
         final String fileContent;
         final String filePath;
@@ -142,6 +147,15 @@ public class HlslDxcAnnotator extends ExternalAnnotator<HlslDxcAnnotator.Collect
             if (settings.isTreatWarningsAsErrors()) {
                 command.add("-WX");
             }
+            // Add user-specified additional arguments
+            String additionalArgs = settings.getAdditionalArgs();
+            if (additionalArgs != null && !additionalArgs.isBlank()) {
+                for (String arg : additionalArgs.trim().split("\\s+")) {
+                    if (!arg.isEmpty()) {
+                        command.add(arg);
+                    }
+                }
+            }
             // Add include path from original file's directory
             String originalDir = new File(info.filePath).getParent();
             if (originalDir != null) {
@@ -173,17 +187,46 @@ public class HlslDxcAnnotator extends ExternalAnnotator<HlslDxcAnnotator.Collect
 
             // Parse output lines for diagnostics
             for (String line : outputLines) {
+                String trimmed = line.trim();
+                
+                // Skip empty lines
+                if (trimmed.isEmpty()) continue;
+                
                 // Skip <built-in> diagnostics from DXC internals
-                if (line.contains("<built-in>")) continue;
+                if (trimmed.contains("<built-in>")) continue;
+                
                 // Suppress missing entry point error — expected for non-main shader files
-                if (line.contains("missing entry point definition")) continue;
-                Matcher m = DIAG_PATTERN.matcher(line.trim());
+                if (trimmed.contains("missing entry point definition")) continue;
+                
+                Matcher m = DIAG_PATTERN.matcher(trimmed);
                 if (m.matches()) {
                     int diagLine = m.group(1) != null ? Integer.parseInt(m.group(1)) : 0;
                     int diagCol = m.group(2) != null ? Integer.parseInt(m.group(2)) : 0;
                     String severity = m.group(3);
                     String message = m.group(4);
-                    diagnostics.add(new DxcDiagnostic(diagLine, diagCol, severity, message));
+
+                    // Filter DXC false positive: "parameter 'X' is not used" when X
+                    // actually appears elsewhere in the source (common with inout params)
+                    if ("warning".equals(severity)) {
+                        Matcher up = UNUSED_PARAM_PATTERN.matcher(message);
+                        if (up.find()) {
+                            String paramName = up.group(1);
+                            // Check if param name is used as "paramName." (member access) in the source
+                            if (info.fileContent.contains(paramName + ".")) {
+                                continue;
+                            }
+                        }
+                    }
+
+                    // Only add valid diagnostics (with line/column info)
+                    if (diagLine > 0) {
+                        diagnostics.add(new DxcDiagnostic(diagLine, diagCol, severity, message));
+                    } else {
+                        LOG.debug("Skipping diagnostic without line info: " + message);
+                    }
+                } else if (!trimmed.isEmpty() && !trimmed.startsWith("note:")) {
+                    // Log unparseable lines for debugging (except note continuations)
+                    LOG.debug("Could not parse diagnostic line: " + trimmed);
                 }
             }
 

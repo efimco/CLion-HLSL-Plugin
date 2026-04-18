@@ -1,0 +1,7 @@
+// #pragma hlsl profile ps_6_6
+// #pragma hlsl entry main
+
+float4 MyRayGen() : SV_Target
+{
+    return float4(1, 0, 0, 1);
+}

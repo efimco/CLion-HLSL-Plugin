@@ -37,6 +37,13 @@
                 language="HLSL"
                 implementationClass="com.hlsl.HlslBraceMatcher"/>
 
+        <psi.referenceContributor
+                language="HLSL"
+                implementation="com.hlsl.navigation.HlslReferenceContributor"/>
+
+        <gotoDeclarationHandler
+                implementation="com.hlsl.navigation.HlslGotoDeclarationHandler"/>
+
         <annotator
                 language="HLSL"
                 implementationClass="com.hlsl.highlighting.HlslStructNameAnnotator"/>
@@ -53,5 +60,11 @@
 
         <applicationService
                 serviceImplementation="com.hlsl.validation.HlslDxcSettings"/>
+
+        <intentionAction>
+            <language>HLSL</language>
+            <className>com.hlsl.intentions.HlslAddDxcPragmasIntention</className>
+            <category>HLSL</category>
+        </intentionAction>
     </extensions>
 </idea-plugin>

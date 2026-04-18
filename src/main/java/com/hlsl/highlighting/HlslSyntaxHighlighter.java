@@ -24,6 +24,12 @@ public class HlslSyntaxHighlighter extends SyntaxHighlighterBase {
             createTextAttributesKey("HLSL_TYPE", DefaultLanguageHighlighterColors.CLASS_NAME);
     public static final TextAttributesKey BUILTIN_FUNCTION =
             createTextAttributesKey("HLSL_BUILTIN_FUNCTION", DefaultLanguageHighlighterColors.STATIC_METHOD);
+    public static final TextAttributesKey FUNCTION_CALL =
+            createTextAttributesKey("HLSL_FUNCTION_CALL", DefaultLanguageHighlighterColors.FUNCTION_CALL);
+    public static final TextAttributesKey INSTANCE_METHOD_CALL =
+            createTextAttributesKey("HLSL_INSTANCE_METHOD_CALL", DefaultLanguageHighlighterColors.INSTANCE_METHOD);
+    public static final TextAttributesKey FIELD_ACCESS =
+            createTextAttributesKey("HLSL_FIELD_ACCESS", DefaultLanguageHighlighterColors.INSTANCE_FIELD);
     public static final TextAttributesKey SEMANTIC =
             createTextAttributesKey("HLSL_SEMANTIC", DefaultLanguageHighlighterColors.METADATA);
     public static final TextAttributesKey PREPROCESSOR =
@@ -60,6 +66,9 @@ public class HlslSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey[] KEYWORD_KEYS = {KEYWORD};
     private static final TextAttributesKey[] TYPE_KEYS = {TYPE_KEYWORD};
     private static final TextAttributesKey[] BUILTIN_KEYS = {BUILTIN_FUNCTION};
+        private static final TextAttributesKey[] FUNCTION_CALL_KEYS = {FUNCTION_CALL};
+    private static final TextAttributesKey[] INSTANCE_METHOD_CALL_KEYS = {INSTANCE_METHOD_CALL};
+    private static final TextAttributesKey[] FIELD_ACCESS_KEYS = {FIELD_ACCESS};
     private static final TextAttributesKey[] SEMANTIC_KEYS = {SEMANTIC};
     private static final TextAttributesKey[] PREPROCESSOR_KEYS = {PREPROCESSOR};
     private static final TextAttributesKey[] NUMBER_KEYS = {NUMBER};
@@ -88,6 +97,9 @@ public class HlslSyntaxHighlighter extends SyntaxHighlighterBase {
         if (tokenType.equals(HlslTokenTypes.KEYWORD)) return KEYWORD_KEYS;
         if (tokenType.equals(HlslTokenTypes.TYPE_KEYWORD)) return TYPE_KEYS;
         if (tokenType.equals(HlslTokenTypes.BUILTIN_FUNCTION)) return BUILTIN_KEYS;
+        if (tokenType.equals(HlslTokenTypes.FUNCTION_CALL)) return FUNCTION_CALL_KEYS;
+        if (tokenType.equals(HlslTokenTypes.INSTANCE_METHOD_CALL)) return INSTANCE_METHOD_CALL_KEYS;
+        if (tokenType.equals(HlslTokenTypes.FIELD_ACCESS)) return FIELD_ACCESS_KEYS;
         if (tokenType.equals(HlslTokenTypes.SEMANTIC)) return SEMANTIC_KEYS;
         if (tokenType.equals(HlslTokenTypes.PREPROCESSOR)) return PREPROCESSOR_KEYS;
         if (tokenType.equals(HlslTokenTypes.NUMBER)) return NUMBER_KEYS;

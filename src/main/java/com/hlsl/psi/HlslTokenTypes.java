@@ -18,6 +18,9 @@ public interface HlslTokenTypes {
 
     // Built-in functions
     IElementType BUILTIN_FUNCTION = new HlslTokenType("BUILTIN_FUNCTION");
+    IElementType FUNCTION_CALL = new HlslTokenType("FUNCTION_CALL");
+    IElementType INSTANCE_METHOD_CALL = new HlslTokenType("INSTANCE_METHOD_CALL");
+    IElementType FIELD_ACCESS = new HlslTokenType("FIELD_ACCESS");
 
     // Literals
     IElementType NUMBER = new HlslTokenType("NUMBER");

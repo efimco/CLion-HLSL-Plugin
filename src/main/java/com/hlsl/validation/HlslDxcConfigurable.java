@@ -22,6 +22,7 @@ public class HlslDxcConfigurable implements Configurable {
     private JTextField hlslVersionField;
     private JCheckBox enableValidationCheckBox;
     private JCheckBox treatWarningsAsErrorsCheckBox;
+    private JTextField additionalArgsField;
 
     // Warning group checkboxes: flag name -> checkbox
     private final Map<String, JCheckBox> warningCheckBoxes = new LinkedHashMap<>();
@@ -44,6 +45,7 @@ public class HlslDxcConfigurable implements Configurable {
         hlslVersionField = new JTextField();
         enableValidationCheckBox = new JCheckBox("Enable DXC validation");
         treatWarningsAsErrorsCheckBox = new JCheckBox("Treat warnings as errors (-WX)");
+        additionalArgsField = new JTextField();
 
         // Warning group checkboxes
         warningCheckBoxes.put("unused-variable", new JCheckBox("Unused variables"));
@@ -74,6 +76,7 @@ public class HlslDxcConfigurable implements Configurable {
                 .addLabeledComponent("Default shader profile:", defaultProfileField)
                 .addLabeledComponent("Default entry point:", defaultEntryPointField)
                 .addLabeledComponent("HLSL version (-HV):", hlslVersionField)
+                .addLabeledComponent("Additional DXC arguments:", additionalArgsField)
                 .addComponent(enableValidationCheckBox)
                 .addComponent(treatWarningsAsErrorsCheckBox)
                 .addComponent(warningsPanel)
@@ -88,6 +91,7 @@ public class HlslDxcConfigurable implements Configurable {
                 || !defaultProfileField.getText().equals(settings.getDefaultProfile())
                 || !defaultEntryPointField.getText().equals(settings.getDefaultEntryPoint())
                 || !hlslVersionField.getText().equals(settings.getHlslVersion())
+                || !additionalArgsField.getText().equals(settings.getAdditionalArgs())
                 || enableValidationCheckBox.isSelected() != settings.isEnableValidation()
                 || treatWarningsAsErrorsCheckBox.isSelected() != settings.isTreatWarningsAsErrors()
                 || warningCheckBoxes.get("unused-variable").isSelected() != settings.isWarnUnusedVariable()
@@ -107,6 +111,7 @@ public class HlslDxcConfigurable implements Configurable {
         settings.setDefaultProfile(defaultProfileField.getText());
         settings.setDefaultEntryPoint(defaultEntryPointField.getText());
         settings.setHlslVersion(hlslVersionField.getText());
+        settings.setAdditionalArgs(additionalArgsField.getText());
         settings.setEnableValidation(enableValidationCheckBox.isSelected());
         settings.setTreatWarningsAsErrors(treatWarningsAsErrorsCheckBox.isSelected());
         settings.setWarnUnusedVariable(warningCheckBoxes.get("unused-variable").isSelected());
@@ -126,6 +131,7 @@ public class HlslDxcConfigurable implements Configurable {
         defaultProfileField.setText(settings.getDefaultProfile());
         defaultEntryPointField.setText(settings.getDefaultEntryPoint());
         hlslVersionField.setText(settings.getHlslVersion());
+        additionalArgsField.setText(settings.getAdditionalArgs());
         enableValidationCheckBox.setSelected(settings.isEnableValidation());
         treatWarningsAsErrorsCheckBox.setSelected(settings.isTreatWarningsAsErrors());
         warningCheckBoxes.get("unused-variable").setSelected(settings.isWarnUnusedVariable());

@@ -33,6 +33,7 @@ public final class HlslDxcSettings implements PersistentStateComponent<HlslDxcSe
         public boolean warnConversion = true;
         public boolean warnPayloadAccess = true;
         public boolean warnEffectsSyntax = true;
+        public String additionalArgs = "";
     }
 
     private State state = new State();
@@ -92,6 +93,9 @@ public final class HlslDxcSettings implements PersistentStateComponent<HlslDxcSe
 
     public boolean isWarnEffectsSyntax() { return state.warnEffectsSyntax; }
     public void setWarnEffectsSyntax(boolean v) { state.warnEffectsSyntax = v; }
+
+    public String getAdditionalArgs() { return state.additionalArgs; }
+    public void setAdditionalArgs(String args) { state.additionalArgs = args; }
 
     /**
      * Returns the resolved DXC path: user setting if non-empty, otherwise auto-detected.
