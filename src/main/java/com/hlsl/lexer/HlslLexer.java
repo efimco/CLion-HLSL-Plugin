@@ -20,6 +20,11 @@ public class HlslLexer extends LexerBase {
             "struct", "cbuffer", "tbuffer", "class", "enum", "interface"
     );
 
+    public static Set<String> getKeywords() { return KEYWORDS; }
+    public static Set<String> getTypeKeywords() { return TYPE_KEYWORDS; }
+    public static Set<String> getBuiltinFunctions() { return BUILTIN_FUNCTIONS; }
+    public static Set<String> getSemantics() { return SEMANTICS; }
+
     private static final Set<String> KEYWORDS = Set.of(
             // Control flow
             "if", "else", "for", "while", "do", "switch", "case", "default",

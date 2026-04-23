@@ -37,6 +37,14 @@
                 language="HLSL"
                 implementationClass="com.hlsl.HlslBraceMatcher"/>
 
+        <lang.foldingBuilder
+                language="HLSL"
+                implementationClass="com.hlsl.folding.HlslFoldingBuilder"/>
+
+        <completion.contributor
+                language="HLSL"
+                implementationClass="com.hlsl.completion.HlslCompletionContributor"/>
+
         <psi.referenceContributor
                 language="HLSL"
                 implementation="com.hlsl.navigation.HlslReferenceContributor"/>
@@ -66,5 +74,21 @@
             <className>com.hlsl.intentions.HlslAddDxcPragmasIntention</className>
             <category>HLSL</category>
         </intentionAction>
+
+        <formattingService
+                implementation="com.hlsl.formatting.HlslClangFormatService"/>
+
+        <applicationService
+                serviceImplementation="com.hlsl.formatting.HlslClangFormatSettings"/>
+
+        <applicationConfigurable
+                parentId="tools"
+                instance="com.hlsl.formatting.HlslClangFormatConfigurable"
+                id="com.hlsl.formatting.HlslClangFormatConfigurable"
+                displayName="HLSL / clang-format"/>
+
+        <notificationGroup
+                id="HLSL clang-format"
+                displayType="BALLOON"/>
     </extensions>
 </idea-plugin>
