@@ -14,7 +14,14 @@ public class HlslLexer extends LexerBase {
     private int tokenStart;
     private int tokenEnd;
     private IElementType tokenType;
-    private int state; // 0 = normal, 1 = expecting struct/cbuffer/tbuffer name, 2 = after dot (field access)
+
+    // 0 = normal
+    // 1 = expecting struct/cbuffer/tbuffer name
+    // 2 = after dot (field access)
+    // 3 = after 'template' keyword, expecting '<'
+    // 4 = inside template parameter list '<...>'
+    // 5 = after 'typename' inside template params, expecting the param name
+    private int state;
 
     private static final Set<String> STRUCT_DECLARING_KEYWORDS = Set.of(
             "struct", "cbuffer", "tbuffer", "class", "enum", "interface"
@@ -36,6 +43,8 @@ public class HlslLexer extends LexerBase {
             "namespace",
             // Input/output
             "in", "out", "inout",
+            // Template
+            "template", "typename",
             // Misc
             "true", "false", "NULL",
             "pass", "technique", "technique10", "technique11",
@@ -339,10 +348,17 @@ public class HlslLexer extends LexerBase {
                         ? HlslTokenTypes.INSTANCE_METHOD_CALL
                         : HlslTokenTypes.FIELD_ACCESS;
                 state = 0;
+            } else if (state == 5) {
+                tokenType = HlslTokenTypes.TEMPLATE_TYPE_PARAM;
+                state = 4;
             } else if (KEYWORDS.contains(word)) {
                 tokenType = HlslTokenTypes.KEYWORD;
                 if (STRUCT_DECLARING_KEYWORDS.contains(word)) {
                     state = 1;
+                } else if ("template".equals(word)) {
+                    state = 3;
+                } else if ("typename".equals(word) && state == 4) {
+                    state = 5;
                 } else {
                     state = 0;
                 }
@@ -371,7 +387,7 @@ public class HlslLexer extends LexerBase {
         tokenEnd = tokenStart + 1;
         switch (c) {
             case ';': tokenType = HlslTokenTypes.SEMICOLON; state = 0; return;
-            case ',': tokenType = HlslTokenTypes.COMMA; state = 0; return;
+            case ',': tokenType = HlslTokenTypes.COMMA; state = (state == 4 || state == 5) ? 4 : 0; return;
             case '.': tokenType = HlslTokenTypes.DOT; state = 2; return;
             case ':': tokenType = HlslTokenTypes.COLON; state = 0; return;
             case '(': tokenType = HlslTokenTypes.LPAREN; state = 0; return;
@@ -387,10 +403,12 @@ public class HlslLexer extends LexerBase {
                 if (tokenEnd < bufferEnd) {
                     char next = buffer.charAt(tokenEnd);
                     if ((c == '=' && next == '=') || (c == '!' && next == '=') ||
-                        (c == '<' && next == '=') || (c == '>' && next == '=') ||
+                        (c == '<' && next == '=') ||
+                        (c == '>' && next == '='  && state != 4 && state != 5) ||
                         (c == '&' && next == '&') || (c == '|' && next == '|') ||
                         (c == '+' && next == '+') || (c == '-' && next == '-') ||
-                        (c == '<' && next == '<') || (c == '>' && next == '>') ||
+                        (c == '<' && next == '<') ||
+                        (c == '>' && next == '>'  && state != 4 && state != 5) ||
                         (c == '+' && next == '=') || (c == '-' && next == '=') ||
                         (c == '*' && next == '=') || (c == '/' && next == '=') ||
                         (c == '%' && next == '=') || (c == '&' && next == '=') ||
@@ -398,6 +416,10 @@ public class HlslLexer extends LexerBase {
                         tokenEnd++;
                     }
                 }
+
+                if (c == '<' && state == 3) state = 4;
+                else if (c == '>' && (state == 4 || state == 5)) state = 0;
+
                 tokenType = HlslTokenTypes.OPERATOR;
                 return;
             default:
@@ -424,6 +446,23 @@ public class HlslLexer extends LexerBase {
         while (i < bufferEnd && Character.isWhitespace(buffer.charAt(i))) {
             i++;
         }
-        return i < bufferEnd && buffer.charAt(i) == '(';
+        if (i >= bufferEnd) return false;
+
+        char c = buffer.charAt(i);
+        if (c == '(') return true;
+        if (c == '<') {
+            int j = i + 1;
+            int depth = 1;
+            while (j < bufferEnd && depth > 0) {
+                char ch = buffer.charAt(j);
+                if (ch == '<') depth++;
+                else if (ch == '>') depth--;
+                j++;
+            }
+            while (j < bufferEnd && Character.isWhitespace(buffer.charAt(j))) j++;
+            return j < bufferEnd && buffer.charAt(j) == '(';
+        }
+
+        return false;
     }
 }

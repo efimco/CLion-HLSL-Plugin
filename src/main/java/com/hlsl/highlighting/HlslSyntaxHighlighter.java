@@ -62,11 +62,13 @@ public class HlslSyntaxHighlighter extends SyntaxHighlighterBase {
             createTextAttributesKey("HLSL_IDENTIFIER", DefaultLanguageHighlighterColors.LOCAL_VARIABLE);
     public static final TextAttributesKey BAD_CHARACTER =
             createTextAttributesKey("HLSL_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
+    public static final TextAttributesKey TEMPLATE_TYPE_PARAM =
+            createTextAttributesKey("HLSL_TEMPLATE_TYPE_PARAM", DefaultLanguageHighlighterColors.CLASS_NAME);
 
     private static final TextAttributesKey[] KEYWORD_KEYS = {KEYWORD};
     private static final TextAttributesKey[] TYPE_KEYS = {TYPE_KEYWORD};
     private static final TextAttributesKey[] BUILTIN_KEYS = {BUILTIN_FUNCTION};
-        private static final TextAttributesKey[] FUNCTION_CALL_KEYS = {FUNCTION_CALL};
+    private static final TextAttributesKey[] FUNCTION_CALL_KEYS = {FUNCTION_CALL};
     private static final TextAttributesKey[] INSTANCE_METHOD_CALL_KEYS = {INSTANCE_METHOD_CALL};
     private static final TextAttributesKey[] FIELD_ACCESS_KEYS = {FIELD_ACCESS};
     private static final TextAttributesKey[] SEMANTIC_KEYS = {SEMANTIC};
@@ -86,6 +88,7 @@ public class HlslSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey[] IDENTIFIER_KEYS = {IDENTIFIER};
     private static final TextAttributesKey[] BAD_CHARACTER_KEYS = {BAD_CHARACTER};
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
+    private static final TextAttributesKey[] TEMPLATE_TYPE_PARAM_KEYS = {TEMPLATE_TYPE_PARAM};
 
     @Override
     public @NotNull Lexer getHighlightingLexer() {
@@ -115,6 +118,7 @@ public class HlslSyntaxHighlighter extends SyntaxHighlighterBase {
         if (tokenType.equals(HlslTokenTypes.LBRACKET) || tokenType.equals(HlslTokenTypes.RBRACKET)) return BRACKET_KEYS;
         if (tokenType.equals(HlslTokenTypes.STRUCT_NAME)) return STRUCT_NAME_KEYS;
         if (tokenType.equals(HlslTokenTypes.IDENTIFIER)) return IDENTIFIER_KEYS;
+        if (tokenType.equals(HlslTokenTypes.TEMPLATE_TYPE_PARAM)) return TEMPLATE_TYPE_PARAM_KEYS;
         if (tokenType.equals(TokenType.BAD_CHARACTER)) return BAD_CHARACTER_KEYS;
         return EMPTY_KEYS;
     }

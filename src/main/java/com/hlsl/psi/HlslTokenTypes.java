@@ -29,6 +29,7 @@ public interface HlslTokenTypes {
     // Identifiers
     IElementType IDENTIFIER = new HlslTokenType("IDENTIFIER");
     IElementType STRUCT_NAME = new HlslTokenType("STRUCT_NAME");
+    IElementType TEMPLATE_TYPE_PARAM = new HlslTokenType("TEMPLATE_TYPE_PARAM");
 
     // Comments
     IElementType LINE_COMMENT = new HlslTokenType("LINE_COMMENT");
