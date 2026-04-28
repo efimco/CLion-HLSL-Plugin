@@ -36,6 +36,7 @@ public class HlslColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Brackets", HlslSyntaxHighlighter.BRACKET),
             new AttributesDescriptor("Struct / Class name", HlslSyntaxHighlighter.STRUCT_NAME),
             new AttributesDescriptor("Identifier", HlslSyntaxHighlighter.IDENTIFIER),
+            new AttributesDescriptor("Template type parameter", HlslSyntaxHighlighter.TEMPLATE_TYPE_PARAM),
             new AttributesDescriptor("Bad character", HlslSyntaxHighlighter.BAD_CHARACTER),
     };
 
